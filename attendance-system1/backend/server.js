@@ -40,6 +40,17 @@ app.get("/", (req, res) => {
 // ---- Connect to MongoDB and Start Server ----
 const PORT = process.env.PORT || 5000;
 
+if (!process.env.MONGO_URI) {
+  console.error("❌ FATAL: MONGO_URI environment variable is not set!");
+  console.error("   → Go to Render Dashboard → Your Service → Environment → Add MONGO_URI");
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error("❌ FATAL: JWT_SECRET environment variable is not set!");
+  process.exit(1);
+}
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(async () => {
@@ -49,8 +60,7 @@ mongoose
     await createDefaultAdmin();
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📍 Geofence: ${process.env.GEOFENCE_LAT}, ${process.env.GEOFENCE_LNG} (${process.env.GEOFENCE_RADIUS}m radius)`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
