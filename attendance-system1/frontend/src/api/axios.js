@@ -7,7 +7,7 @@ import axios from "axios";
 
 // Create a custom axios instance
 const api = axios.create({
-  baseURL: "https://testing-repo-4isg.onrender.com/api", // Backend API base URL
+  baseURL: "https://testing-repo-1e24.onrender.com/api", // Backend API base URL
   headers: {
     "Content-Type": "application/json",
   },

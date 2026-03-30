@@ -79,23 +79,23 @@ process.on("unhandledRejection", (reason, promise) => {
   process.exit(1);
 });
 
-console.log("[BOOT] Attempting MongoDB connection...");
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log("✅ Connected to MongoDB");
-
-    // Auto-create a default admin user if none exists
-    await createDefaultAdmin();
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+console.log(`[BOOT] Starting Express server on port ${PORT}...`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log("[BOOT] Express is up. Now attempting MongoDB connection...");
+  
+  mongoose
+    .connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 })
+    .then(async () => {
+      console.log("✅ Connected to MongoDB");
+      // Auto-create a default admin user if none exists
+      await createDefaultAdmin();
+    })
+    .catch((err) => {
+      console.log("❌ MongoDB connection error:", err.message);
+      console.log("   → Verify your Mongo URI and make sure your IP is whitelisted (0.0.0.0/0) in Atlas!");
     });
-  })
-  .catch((err) => {
-    console.log("❌ MongoDB connection error:", err.message);
-    process.exit(1);
-  });
+});
 
 // ---- Default Admin Creator ----
 // Creates an admin account on first run so you can log in immediately
