@@ -1,14 +1,23 @@
 // =============================================
 // server.js — Main Entry Point for Backend
 // =============================================
+process.stdout.write("[BOOT] server.js starting...\n");
 
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dotenv = require("dotenv");
+let express, mongoose, cors, dotenv;
+try {
+  express = require("express");
+  mongoose = require("mongoose");
+  cors = require("cors");
+  dotenv = require("dotenv");
+  process.stdout.write("[BOOT] core modules loaded\n");
+} catch (e) {
+  process.stdout.write("[BOOT ERROR] core module load failed: " + e.message + "\n");
+  process.exit(1);
+}
 
 // Load environment variables from .env file
 dotenv.config();
+process.stdout.write("[BOOT] ENV loaded. MONGO_URI set: " + !!process.env.MONGO_URI + "\n");
 
 const app = express();
 
@@ -21,10 +30,20 @@ app.use(express.json({ limit: "10mb" })); // 10mb limit for face descriptor payl
 
 // ---- Routes ----
 // Import route handlers
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/users");
-const attendanceRoutes = require("./routes/attendance");
-const settingsRoutes = require("./routes/settings");
+let authRoutes, userRoutes, attendanceRoutes, settingsRoutes;
+try {
+  authRoutes = require("./routes/auth");
+  process.stdout.write("[BOOT] auth route loaded\n");
+  userRoutes = require("./routes/users");
+  process.stdout.write("[BOOT] users route loaded\n");
+  attendanceRoutes = require("./routes/attendance");
+  process.stdout.write("[BOOT] attendance route loaded\n");
+  settingsRoutes = require("./routes/settings");
+  process.stdout.write("[BOOT] settings route loaded\n");
+} catch (e) {
+  process.stdout.write("[BOOT ERROR] route load failed: " + e.message + "\n");
+  process.exit(1);
+}
 
 // Mount routes at their base paths
 app.use("/api/auth", authRoutes);         // Login, register
