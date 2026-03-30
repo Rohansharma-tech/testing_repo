@@ -60,16 +60,26 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 if (!process.env.MONGO_URI) {
-  console.error("❌ FATAL: MONGO_URI environment variable is not set!");
-  console.error("   → Go to Render Dashboard → Your Service → Environment → Add MONGO_URI");
+  console.log("❌ FATAL: MONGO_URI environment variable is not set!");
   process.exit(1);
 }
 
 if (!process.env.JWT_SECRET) {
-  console.error("❌ FATAL: JWT_SECRET environment variable is not set!");
+  console.log("❌ FATAL: JWT_SECRET environment variable is not set! Go to Render -> Environment -> Add JWT_SECRET");
   process.exit(1);
 }
 
+process.on("uncaughtException", (err) => {
+  console.log("[CRASH] Uncaught Exception:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.log("[CRASH] Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
+console.log("[BOOT] Attempting MongoDB connection...");
 mongoose
   .connect(process.env.MONGO_URI)
   .then(async () => {
@@ -83,7 +93,7 @@ mongoose
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
+    console.log("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
 
